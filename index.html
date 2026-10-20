@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小谷IP互动页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+
+        body {
+            background: #f4f7fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px #00000015;
+            overflow: hidden;
+        }
+
+        /* 标签栏 */
+        .tab-header {
+            display: flex;
+            background: #3671c9;
+        }
+
+        .tab-item {
+            padding: 16px 24px;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .tab-item.active {
+            background: #fff;
+            color: #3671c9;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            padding: 30px;
+            min-height: 420px;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* 小谷共用图片 */
+        .xiaogu-img {
+            width: 160px;
+            animation: breathe 2s infinite ease-in-out;
+        }
+
+        @keyframes breathe {
+            0%, 100% {
+                opacity: 0.85;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.03);
+            }
+        }
+
+        /* 1.打工人时钟 */
+        .clock-wrap {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .time-text {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 16px 0;
+        }
+
+        .tip-text {
+            font-size: 18px;
+            color: #666;
+        }
+
+        /* 2.语音互动 */
+        .voice-wrap {
+            text-align: center;
+        }
+
+        #voiceInput {
+            width: 80%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #3671c9;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 4px;
+        }
+
+        #resultBox {
+            margin-top: 20px;
+            padding: 16px;
+            background: #f3f7ff;
+            border-radius: 8px;
+            text-align: left;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 标签切换 -->
+    <div class="tab-header">
+        <div class="tab-item active" data-tab="tab1">小谷打工人时钟</div>
+        <div class="tab-item" data-tab="tab2">小谷语音互动</div>
+    </div>
+
+    <div class="tab-content">
+        <!-- 面板1：打工人时钟 -->
+        <div class="tab-panel active" id="tab1">
+            <div class="clock-wrap">
+                <h2>小谷打工人时钟</h2>
+
+                <!-- 这里使用唯一一张小谷图片 -->
+                <img class="xiaogu-img" src="xiaogu.png" alt="小谷IP形象">
+
+                <div class="time-text" id="timeShow">00:00:00</div>
+                <div class="tip-text" id="timeTip"></div>
+            </div>
+        </div>
+
+        <!-- 面板2：语音互动 -->
+        <div class="tab-panel" id="tab2">
+            <div class="voice-wrap">
+                <h2>小谷语音互动</h2>
+
+                <!-- 这里也使用同一张小谷图片 -->
+                <img class="xiaogu-img" src="xiaogu.png" alt="小谷IP形象">
+
+                <p style="margin:10px 0;">和小谷对话，可以点语音按钮说话</p>
+
+                <input type="text" id="voiceInput" placeholder="输入文字，或者点麦克风语音">
+                <br>
+
+                <button class="btn" id="speakBtn">开始语音</button>
+                <button class="btn" id="sendBtn">发送消息</button>
+
+                <div id="resultBox">对话记录：</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 标签切换
+    const tabs = document.querySelectorAll('.tab-item');
+    const panels = document.querySelectorAll('.tab-panel');
+
+    tabs.forEach(tab => {
+        tab.onclick = function () {
+            let target = this.dataset.tab;
+
+            tabs.forEach(t => t.classList.remove('active'));
+            panels.forEach(p => p.classList.remove('active'));
+
+            this.classList.add('active');
+            document.getElementById(target).classList.add('active');
+        }
+    });
+
+    // 打工人时钟
+    function updateClock() {
+        let now = new Date();
+        let h = String(now.getHours()).padStart(2, '0');
+        let m = String(now.getMinutes()).padStart(2, '0');
+        let s = String(now.getSeconds()).padStart(2, '0');
+
+        document.getElementById("timeShow").innerText = `${h}:${m}:${s}`;
+
+        let tip = "";
+        if (h >= 9 && h < 12) tip = "小谷：认真搬砖中💻";
+        else if (h >= 12 && h < 14) tip = "小谷：干饭时间🍚";
+        else if (h >= 14 && h < 18) tip = "小谷：继续努力工作！";
+        else if (h >= 18 && h < 22) tip = "小谷：下班放松时刻✨";
+        else tip = "小谷：夜深啦，早点休息";
+
+        document.getElementById("timeTip").innerText = tip;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 语音互动
+    const resultBox = document.getElementById("resultBox");
+    const voiceInput = document.getElementById("voiceInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const speakBtn = document.getElementById("speakBtn");
+
+    sendBtn.onclick = function () {
+        let msg = voiceInput.value.trim();
+        if (!msg) return;
+
+        resultBox.innerHTML += `<br>你：${msg}`;
+
+        let reply = "";
+        if (msg.includes("你好")) reply = "小谷：你好呀！很高兴见到你";
+        else if (msg.includes("几点")) reply = "小谷：可以切换到时钟页面查看当前时间哦";
+        else if (msg.includes("累")) reply = "小谷：辛苦啦，记得休息一下~";
+        else reply = "小谷：收到！我在听，继续跟我说吧";
+
+        resultBox.innerHTML += `<br>小谷：${reply}`;
+        voiceInput.value = "";
+    }
+
+    speakBtn.onclick = async function () {
+        if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+            alert("你的浏览器不支持语音识别，建议用Chrome");
+            return;
+        }
+
+        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        rec.lang = "zh-CN";
+        rec.start();
+
+        rec.onresult = function (e) {
+            let text = e.results[0][0].transcript;
+            voiceInput.value = text;
+        };
+    }
+</script>
+
+</body>
+</html>
